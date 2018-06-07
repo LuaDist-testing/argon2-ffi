@@ -1,20 +1,20 @@
 -- This file was automatically generated for the LuaDist project.
 
 package = "argon2-ffi"
-version = "1.0.0-0"
+version = "3.0.0-1"
 -- LuaDist source
 source = {
-  tag = "1.0.0-0",
+  tag = "3.0.0-1",
   url = "git://github.com/LuaDist-testing/argon2-ffi.git"
 }
 -- Original source
 -- source = {
---   url = "git://github.com/thibaultCha/lua-argon2-ffi",
---   tag = "1.0.0"
+--   url = "git://github.com/thibaultcha/lua-argon2-ffi",
+--   tag = "3.0.0"
 -- }
 description = {
-  summary = "LuaJIT FFI binding for the Argon2 password hashing algorithm",
-  homepage = "https://github.com/thibaultCha/lua-argon2-ffi",
+  summary = "LuaJIT FFI binding for the Argon2 password hashing function",
+  homepage = "https://github.com/thibaultcha/lua-argon2-ffi",
   license = "MIT"
 }
 build = {
