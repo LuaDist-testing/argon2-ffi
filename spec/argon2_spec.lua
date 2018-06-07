@@ -2,7 +2,7 @@ local argon2 = require "argon2"
 
 describe("argon2", function()
     it("_VERSION field", function()
-        assert.equal("3.0.0", argon2._VERSION)
+        assert.equal("3.0.1", argon2._VERSION)
     end)
 
     it("_AUTHOR field", function()
@@ -78,6 +78,10 @@ describe("hash_encoded()", function()
             assert.has_error(function()
                 argon2.hash_encoded("", "", {parallelism = ""})
             end, "bad argument #3 to 'hash_encoded' (expected parallelism to be a number, got string)")
+
+            assert.has_error(function()
+                argon2.hash_encoded("", "", {hash_len = ""})
+            end, "bad argument #3 to 'hash_encoded' (expected hash_len to be a number, got string)")
 
             --[[
             assert.has_error(function()
@@ -230,6 +234,46 @@ describe("verify()", function()
             assert.is_nil(ok)
             assert.equal("Decoding failed", err)
         end)
+    end)
+end)
+
+describe("#JIT", function()
+
+    local function read_trace(outfile)
+        local f = assert(io.open(outfile, "r"))
+        local t = f:read("*a")
+        f:close()
+        return t
+    end
+
+    it("hash_encoded() JITs", function()
+        local v = require "jit.v"
+        local outfile = os.tmpname()
+        v.on(outfile)
+
+        for _ = 1, 100 do
+            argon2.hash_encoded("password", "somesalt")
+        end
+
+        local trace = read_trace(outfile)
+        assert.matches("argon2_spec%.lua:%d+ loop", trace)
+        assert.not_matches("NYI", trace)
+    end)
+
+    it("verify() JITs", function()
+        local v = require "jit.v"
+        local outfile = os.tmpname()
+        v.on(outfile)
+
+        local hash = assert(argon2.hash_encoded("password", "somesalt"))
+
+        for _ = 1, 100 do
+            argon2.verify(hash, "password")
+        end
+
+        local trace = read_trace(outfile)
+        assert.matches("argon2_spec%.lua:%d+ loop", trace)
+        assert.not_matches("NYI", trace)
     end)
 end)
 
